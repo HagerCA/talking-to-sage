@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<title>Talking to SAGE · The Nikhil Playbook · Christopher Hager</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root {
+  --crown: #1B0C20; --mirror: #E7E7E7; --ankh: #A57626; --triton: #7C2D50; --mystic: #3B1A4C; --gaia: #1D3237;
+  --gold: #B3812B; --violet: #8C7FD0; --gold-hi: #D9A957;
+  --ink: #ECE6EE; --ink-2: #BFB3C6; --ink-3: #8D8095;
+  --panel: rgba(59, 26, 76, 0.38); --line: rgba(165, 118, 38, 0.28); --hair: rgba(231, 231, 231, 0.09);
+  --serif: 'Instrument Serif', Georgia, serif; --sans: 'DM Sans', system-ui, sans-serif;
+  --grot: 'Space Grotesk', 'DM Sans', sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--crown); scroll-behavior: smooth; }
+body {
+  margin: 0; color: var(--ink); font: 400 16px/1.6 var(--sans);
+  background: radial-gradient(ellipse 120% 70% at 50% 0%, #2A1130 0%, var(--crown) 55%) no-repeat, var(--crown);
+  -webkit-font-smoothing: antialiased;
+}
+.halftone {
+  position: fixed; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(rgba(231,231,231,.05) 1px, transparent 1.2px); background-size: 6px 6px;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 45%);
+}
+code { font-family: var(--mono); font-size: .86em; color: var(--gold-hi); }
+b, strong { font-weight: 500; color: var(--mirror); }
+
+/* Hero */
+.hero {
+  position: relative; text-align: center; padding: 88px 24px 56px;
+  background: radial-gradient(ellipse at center, #1B0C20 0%, #2A1130 45%, #7C2D50 130%);
+  border-bottom: 1px solid var(--line);
+}
+.logo { display: block; margin: 0 auto 22px; opacity: .95; }
+.eyebrow, .kicker { font: 500 12px/1 var(--grot); letter-spacing: .24em; text-transform: uppercase; color: var(--ankh); margin: 0; }
+h1 { font: 400 clamp(52px, 8vw, 96px)/1 var(--serif); margin: 18px 0 18px; letter-spacing: -.01em; }
+h1 em { color: var(--gold-hi); }
+.lede { max-width: 660px; margin: 0 auto; color: var(--ink-2); font-size: 18px; }
+.stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 44px auto 0; max-width: 980px; }
+.stats div { flex: 1 1 170px; padding: 18px 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(27,12,32,.55); }
+.stats b { display: block; font: 400 40px/1 var(--serif); color: var(--mirror); }
+.stats span { display: block; margin-top: 8px; font: 500 11px/1.3 var(--grot); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+
+/* Nav */
+nav.toc { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 12px 16px;
+  background: rgba(27,12,32,.88); backdrop-filter: blur(8px); border-bottom: 1px solid var(--hair); }
+nav.toc a { font: 500 11px/1 var(--grot); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); text-decoration: none;
+  padding: 8px 12px; border-radius: 999px; border: 1px solid var(--hair); }
+nav.toc a:hover { color: var(--gold-hi); border-color: var(--line); }
+
+main { max-width: 1180px; margin: 0 auto; padding: 0 28px; position: relative; }
+section { padding: 72px 0 8px; scroll-margin-top: 60px; }
+.sh { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; margin-bottom: 10px; }
+.sh img { grid-row: span 2; }
+h2 { grid-column: 2; font: 400 42px/1.1 var(--serif); margin: 6px 0 0; }
+.intro { color: var(--ink-2); max-width: 780px; margin: 14px 0 28px; }
+
+/* Part one: six moves */
+.moves { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; counter-reset: mv; }
+.move { position: relative; padding: 22px 22px 20px 70px; border-radius: 16px; background: var(--panel); border: 1px solid var(--hair); }
+.move::before { counter-increment: mv; content: counter(mv); position: absolute; left: 20px; top: 16px; font: 400 40px/1 var(--serif); color: var(--gold-hi); }
+.move h3 { margin: 0 0 4px; font: 400 25px/1.15 var(--serif); color: var(--mirror); }
+.move .say { margin: 0 0 8px; font: italic 400 17px/1.35 var(--serif); color: var(--gold-hi); }
+.move p { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+
+/* Part two: the loop */
+.loop { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; margin-top: 8px; }
+.step { position: relative; padding: 20px 16px 18px; border-top: 2px solid var(--gold); background: rgba(27,12,32,.55); border-right: 1px solid var(--hair); }
+.step:first-child { border-radius: 16px 0 0 16px; } .step:last-child { border-radius: 0 16px 16px 0; border-right: 0; }
+.step .n { font: 500 11px/1 var(--grot); letter-spacing: .2em; text-transform: uppercase; color: var(--ankh); }
+.step h3 { margin: 8px 0 8px; font: 400 23px/1.1 var(--serif); color: var(--mirror); }
+.step p { margin: 0; font: italic 400 15.5px/1.35 var(--serif); color: var(--ink-2); }
+.step.key { background: linear-gradient(170deg, rgba(124,45,80,.55), rgba(27,12,32,.6)); border-top-color: var(--gold-hi); }
+.step.key .n { color: var(--gold-hi); }
+.insight { display: grid; grid-template-columns: 30px 1fr; gap: 14px; margin-top: 22px; padding: 22px 24px; border-radius: 16px;
+  background: linear-gradient(120deg, rgba(124,45,80,.35), rgba(59,26,76,.35)); border: 1px solid var(--line); }
+.insight h4, .method h4, .replay h4 { margin: 0 0 6px; font: 500 12px/1.2 var(--grot); letter-spacing: .2em; text-transform: uppercase; color: var(--ankh); }
+.insight p { margin: 0; color: var(--ink); }
+.insight b { color: var(--gold-hi); }
+
+/* Part three: cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 18px; }
+.card { position: relative; padding: 24px 24px 22px; border-radius: 18px; background: var(--panel); border: 1px solid var(--hair); border-top: 2px solid var(--gold); }
+.card header { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: start; }
+.glyph { margin-top: 4px; }
+.card .num { font: 500 11px/1 var(--grot); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+.card h3 { font: 400 28px/1.1 var(--serif); margin: 6px 0 0; color: var(--mirror); }
+.tag { font: 600 10px/1 var(--grot); letter-spacing: .14em; text-transform: uppercase; padding: 7px 9px; border-radius: 999px; white-space: nowrap;
+  color: var(--gold-hi); border: 1px solid var(--line); background: rgba(165,118,38,.12); }
+.card.gate { border-top-color: var(--gold-hi); background: linear-gradient(165deg, rgba(124,45,80,.42), rgba(59,26,76,.38)); }
+.card.gate .tag { color: #F1D9A8; background: rgba(165,118,38,.28); }
+.when { font: italic 400 19px/1.35 var(--serif); color: var(--gold-hi); margin: 16px 0 14px; }
+.lbl { display: block; font: 500 10.5px/1 var(--grot); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
+blockquote { margin: 0 0 16px; padding: 2px 0 2px 14px; border-left: 2px solid var(--violet); color: var(--ink-2); font-size: 14.5px; }
+blockquote p { margin: 0 0 8px; } blockquote p:last-child { margin: 0; }
+blockquote .aside { color: var(--ink-3); font-size: 13.5px; }
+.yours { position: relative; margin: 0 0 14px; padding: 16px 16px 14px; border-radius: 12px; background: rgba(27,12,32,.72); border: 1px solid var(--line); }
+.yours p { margin: 0 0 8px; color: var(--mirror); font-size: 15.5px; line-height: 1.55; padding-right: 64px; }
+.yours p:last-of-type { margin-bottom: 0; }
+.yours ol { margin: 0; padding-left: 20px; color: var(--mirror); font-size: 15.5px; padding-right: 64px; }
+.yours li { margin-bottom: 8px; } .yours li:last-child { margin-bottom: 0; }
+.ph { color: var(--gold-hi); }
+.copy { position: absolute; top: 12px; right: 12px; font: 500 10px/1 var(--grot); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2);
+  background: rgba(59,26,76,.8); border: 1px solid var(--hair); border-radius: 999px; padding: 7px 10px; cursor: pointer; }
+.copy:hover { color: var(--gold-hi); border-color: var(--line); }
+.copy.done { color: #CFE3D9; border-color: rgba(120,180,160,.45); }
+.why { margin: 0; padding-left: 12px; border-left: 2px solid var(--ankh); color: var(--ink); font-size: 14px; }
+.flag { margin: 10px 0 0; color: var(--ink-3); font-size: 13px; }
+
+/* Part four: the origin */
+.timeline { position: relative; margin: 8px 0 0; padding: 0; list-style: none; counter-reset: tl; }
+.timeline::before { content: ""; position: absolute; left: 21px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(var(--gold), var(--violet)); opacity: .5; }
+.timeline li { position: relative; padding: 0 0 26px 64px; }
+.timeline li::before { counter-increment: tl; content: counter(tl); position: absolute; left: 4px; top: 0; width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; font: 500 13px/1 var(--mono); color: var(--crown); background: var(--gold); }
+.timeline li.turn::before { background: var(--gold-hi); box-shadow: 0 0 0 6px rgba(217,169,87,.18); }
+.timeline h3 { margin: 4px 0 6px; font: 400 25px/1.15 var(--serif); color: var(--mirror); }
+.timeline p { margin: 0 0 6px; color: var(--ink-2); max-width: 820px; }
+.timeline q { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--gold-hi); }
+.timeline .result { display: inline-block; margin-top: 4px; font: 500 12px/1.4 var(--mono); color: #CFE3D9; background: rgba(29,50,55,.7);
+  border: 1px solid rgba(120,180,160,.35); border-radius: 8px; padding: 6px 10px; }
+.replay { margin-top: 18px; padding: 26px 26px 22px; border-radius: 18px; border: 1px solid var(--line);
+  background: linear-gradient(140deg, rgba(29,50,55,.6), rgba(59,26,76,.45)); }
+.replay h3 { margin: 0 0 6px; font: 400 32px/1.1 var(--serif); color: var(--mirror); }
+.replay > p { margin: 0 0 16px; color: var(--ink-2); }
+.replay ol { margin: 0; padding: 0; list-style: none; counter-reset: rp; display: grid; gap: 10px; }
+.replay li { position: relative; display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; padding: 12px 14px; border-radius: 12px; background: rgba(27,12,32,.6); border: 1px solid var(--hair); }
+.replay li::before { counter-increment: rp; content: counter(rp); font: 400 26px/1 var(--serif); color: var(--gold-hi); }
+.replay li span { color: var(--mirror); }
+.replay li small { display: block; color: var(--ink-3); font-size: 13px; margin-top: 3px; }
+
+/* Part five: pressure test */
+.verdicts { display: grid; gap: 10px; }
+.v { display: grid; grid-template-columns: 1.1fr 150px 1.6fr; gap: 18px; align-items: start; padding: 16px 18px; border-radius: 14px; background: rgba(27,12,32,.55); border: 1px solid var(--hair); }
+.v .claim { font: italic 400 18px/1.3 var(--serif); color: var(--mirror); }
+.v .claim small { display: block; margin-top: 4px; font: 400 12.5px/1.3 var(--sans); font-style: normal; color: var(--ink-3); }
+.chip { justify-self: start; font: 600 10px/1 var(--grot); letter-spacing: .14em; text-transform: uppercase; padding: 7px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid; }
+.chip.holds { color: #CFE3D9; border-color: rgba(120,180,160,.45); background: rgba(29,50,55,.7); }
+.chip.caveat { color: var(--gold-hi); border-color: var(--line); background: rgba(165,118,38,.14); }
+.chip.notyet { color: #E6B8CB; border-color: rgba(176,98,138,.5); background: rgba(124,45,80,.3); }
+.chip.fixed { color: #D7C9F2; border-color: rgba(140,127,208,.5); background: rgba(59,26,76,.8); }
+.v .ev { color: var(--ink-2); font-size: 14.5px; }
+.subhead { margin: 40px 0 6px; font: 400 30px/1.15 var(--serif); color: var(--mirror); }
+.subintro { margin: 0 0 18px; color: var(--ink-2); max-width: 780px; }
+
+.method { padding: 56px 0 24px; border-top: 1px solid var(--hair); margin-top: 72px; }
+.method p { color: var(--ink-3); font-size: 13.5px; max-width: 900px; }
+footer { display: flex; gap: 12px; align-items: center; justify-content: center; padding: 34px 20px 48px; color: var(--ink-3);
+  font: 500 11px/1 var(--grot); letter-spacing: .16em; text-transform: uppercase; border-top: 1px solid var(--line);
+  background: radial-gradient(ellipse at center bottom, #2A1130, var(--crown) 70%); }
+
+@media (max-width: 1000px) { .loop { grid-template-columns: repeat(3, 1fr); } .step:first-child, .step:last-child { border-radius: 0; } .loop { border-radius: 16px; overflow: hidden; } }
+@media (max-width: 760px) { .v { grid-template-columns: 1fr; gap: 8px; } }
+@media (max-width: 560px) { .cards, .moves { grid-template-columns: 1fr; } .loop { grid-template-columns: 1fr 1fr; } h2 { font-size: 34px; } .yours p, .yours ol { padding-right: 0; padding-top: 22px; } }
+@media print { .halftone, nav.toc, .copy { display: none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .card, .v, .move { break-inside: avoid; } }
+</style>
+</head><body>
+<div class="halftone"></div>
+
+<header class="hero">
+  <img src="glyphs/mark-light.png" alt="Christopher Hager logomark" class="logo" width="54" height="56">
+  <p class="eyebrow">SAGE · The Nikhil Playbook · Build session, October 8, 2026</p>
+  <h1>Talking to <em>SAGE</em></h1>
+  <p class="lede">How Nikhil Kale talks to ACE, pulled from two hours and twenty minutes of a live build session, sorted by what you are building, and pressure tested before it went on the wall. Say these out loud. They were made to be spoken.</p>
+  <div class="stats">
+    <div><b>10</b><span>prompts he dictated</span></div>
+    <div><b>6</b><span>moves in every opening</span></div>
+    <div><b>6</b><span>steps from plan to proof</span></div>
+    <div><b>7</b><span>changes the pressure test made</span></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#opening">The opening</a>
+  <a href="#loop">The loop</a>
+  <a href="#building">By what you're building</a>
+  <a href="#origin">How /va happened</a>
+  <a href="#pressure">Pressure tested</a>
+</nav>
+
+<main>
+
+<!-- PART ONE -->
+<section id="opening">
+  <div class="sh"><img src="glyphs/ankh-light.png" alt="" width="20" height="20"><p class="kicker">Part one</p><h2>The opening, in six moves</h2></div>
+  <p class="intro">Every first prompt Nikhil gave had the same shape. He doesn't recite it like a template. It's just what a clear brief sounds like when you say it out loud, and SAGE does its best work when all six moves are in it.</p>
+  <div class="moves">
+    <div class="move"><h3>Set the scene</h3><p class="say">"As you know, we've built…" · "I'm on the call with Nikhil, the creator of ACE…"</p><p>SAGE starts out knowing what exists, who is in the room, and what already happened ("the error we logged prior").</p></div>
+    <div class="move"><h3>Say what you see</h3><p class="say">"It says voice, but the voice isn't transcribed."</p><p>Say what is happening, where it is on screen, and what should be happening instead. A screenshot or a version number beats an adjective.</p></div>
+    <div class="move"><h3>Give the so-that</h3><p class="say">"So that we can refine further." · "So I can understand and approve."</p><p>The purpose sets the depth. The same audit means something different when it feeds a decision than when it feeds a build.</p></div>
+    <div class="move"><h3>Analysis before action</h3><p class="say">"Do an analysis first." · "Would there be any conflicts?"</p><p>When something is complex or new, he asks for the read before the change. On small actions SAGE already knows, he goes straight to "run it now."</p></div>
+    <div class="move"><h3>Name the shape</h3><p class="say">"An HTML map, so I can see it at a glance."</p><p>Tell it what the answer should look like: a visual map, A to J in plain language, a report in your inbox. You get the answer in a form you can use.</p></div>
+    <div class="move"><h3>Invite the upside</h3><p class="say">"Add any insights or opportunities." · "What would you build next?"</p><p>He always leaves room for SAGE to see more than he asked for. That's where most of the good findings came from.</p></div>
+  </div>
+</section>
+
+<!-- PART TWO -->
+<section id="loop">
+  <div class="sh"><img src="glyphs/water-light.png" alt="" width="20" height="20"><p class="kicker">Part two</p><h2>The loop, from plan to proof</h2></div>
+  <p class="intro">Once the opening lands, he runs the same steps every time, in this order. The highlighted step is the one that does the most work.</p>
+  <div class="loop">
+    <div class="step"><span class="n">Step 1</span><h3>Plan</h3><p>"Do an analysis first and figure out the best plan."</p></div>
+    <div class="step key"><span class="n">Step 2</span><h3>Pressure test</h3><p>"Pressure test all your assumptions one more time."</p></div>
+    <div class="step"><span class="n">Step 3</span><h3>Read it back plain</h3><p>"Each one, A to J, in simple layman's terms."</p></div>
+    <div class="step"><span class="n">Step 4</span><h3>Approve with fences</h3><p>"We're happy with your plan. Keep any hooks disconnected."</p></div>
+    <div class="step"><span class="n">Step 5</span><h3>Run it</h3><p>"Go ahead and run it now."</p></div>
+    <div class="step"><span class="n">Step 6</span><h3>Prove it</h3><p>"We're running a test for three days."</p></div>
+  </div>
+  <div class="insight">
+    <img src="glyphs/sun-light.png" alt="" width="26" height="26">
+    <div><h4>The step you skipped</h4><p>Looking at the /va findings, you went straight to <b>"go hit all of these 14 things, highest priority to the bottom."</b> Nikhil stopped you: "I'll tell you exactly what I would do." Then came the pressure test. It made <b>seven changes to the report</b> before a single line of the skill was touched.</p></div>
+  </div>
+</section>
+
+<!-- PART THREE -->
+<section id="building">
+  <div class="sh"><img src="glyphs/ibis-light.png" alt="" width="20" height="20"><p class="kicker">Part three</p><h2>By what you're building</h2></div>
+  <p class="intro">Ten situations from the call. Each card has what Nikhil actually said (lightly cleaned of repeated words), your version tuned to how you talk, and why it works. Words in <span class="ph">[brackets]</span> are yours to fill. The copy button takes the whole prompt.</p>
+  <div class="cards">
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/ibis-light.png" alt="" width="28" height="28"><div><span class="num">01</span><h3>Auditing something you built</h3></div><span class="tag">Audit</span></header>
+      <p class="when">A skill has grown and you're no longer sure everything it does, or you're about to add features to it.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"As you know, we've built out a VA skill that has multiple capabilities. I want to understand all the capabilities so that we can refine further. Go ahead and audit what we've built, the features and the functionality, and design an HTML map and report, so I'm able to see at a glance the actual structure and workflows of the VA skill and any sub-skills. Also add any notes, insights or opportunities to refine it further."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"As you know, we've built <span class="ph">[the CMO]</span>. I want to see everything it does so we can sharpen it. Audit it and give me an HTML map I can read at a glance: the structure, the workflows, and where it's leaking. Add any insights or opportunities. Don't change anything yet."</p></div>
+      <p class="why">All six moves are in it, and "don't change anything yet" keeps the audit an audit. His reason for doing it before adding features: if you build on top of "an energetic leak or a subtle distortion," it causes more problems downstream.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/horus-light.png" alt="" width="28" height="28"><div><span class="num">02</span><h3>Something's off</h3></div><span class="tag">Debug</span></header>
+      <p class="when">A feature isn't doing what it should, an error showed up, or something is quietly stuck.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"I'm trying to test out the agents view. You can see in the screenshot attached, this task attempted to check five of my emails and then email me, but it's coming up with the safety guardrails error, with both connectors. How can we resolve this? Which connector do we use for my Gmail? We want to unblock this so that it works."</p><p class="aside">And the short form, while the comms sync crawled: "Is it still in queue, or is there an issue?"</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"Here's what I'm seeing: <span class="ph">[what, and where on screen]</span>. What should be happening is <span class="ph">[this]</span>. <span class="ph">[Screenshot attached. We're on version X. We already tried Y.]</span> Figure out what's going on before you fix anything, and tell me whether it's a queue, a setting, or a real bug."</p></div>
+      <p class="why">What you see versus what should happen, plus evidence. "It's broken" makes SAGE guess. "It says voice but there's no transcript, and sync is still spinning" lets it look.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/scarab-light.png" alt="" width="28" height="28"><div><span class="num">03</span><h3>Bringing in a new skill or tool</h3></div><span class="tag">Install</span></header>
+      <p class="when">Someone sends you a GitHub link, or you've found a tool you want inside SAGE.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"I want to integrate this skill into my ACE so that I can map out my system. Can you first check and integrate the skill, and also suggest how this would be useful for me to better visualize my data. And also, would there be any conflicts if we install this skill?"</p><p class="aside">His standing rule: before installing anything, ask how it would be useful for you and whether it will conflict with anything you already use. For Superpowers he went one step further: "Do an analysis first and figure out the best integration plan."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"I want to bring <span class="ph">[this link]</span> into SAGE so I can <span class="ph">[purpose]</span>. Before you install anything: how would it actually help me, would it conflict with anything I already run, and does it add hooks? Keep hooks off unless I say otherwise."</p></div>
+      <p class="why">It paid off the same afternoon. Graphify's own installer would have written into CLAUDE.md, hooked itself onto every file read and search, and added a git hook. Asking the conflict question meant five conflicts got closed before any of them could happen.</p>
+    </article>
+
+    <article class="card gate">
+      <header><img class="glyph" src="glyphs/ankh-light.png" alt="" width="28" height="28"><div><span class="num">04</span><h3>Before any batch of changes</h3></div><span class="tag">The gate</span></header>
+      <p class="when">SAGE has handed you findings, fixes or a plan, and you're about to say "do it all."</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"I would always, in this instance, ask ACE to just pressure test all your assumptions one more time."</p><p>"Can you tell me each refinement from A to J in simple layman's terms so I can understand and approve, please?"</p><p class="aside">Why: "I've skimmed through it, but I don't want to read every single detail, because I just have no capacity for it."</p></blockquote>
+      <span class="lbl">Your version, three lines, in order</span>
+      <div class="yours"><button class="copy">Copy</button><ol>
+        <li>"Pressure test all your assumptions one more time."</li>
+        <li>"Walk me through each change, A to whatever letter, in plain language so I can approve."</li>
+        <li>"Yes to <span class="ph">[all / A, C and D]</span>. Then reread the skill for anything that now contradicts itself, and build it."</li>
+      </ol></div>
+      <p class="why">There's never a perfect solution, he said, only black-and-white calls and gray ones. The pressure test catches the gray ones while they're still cheap to fix. On /va it changed seven things.</p>
+      <p class="flag">Lines one and two are his words. "Reread for contradictions" is SAGE's addition, taken from his own rule in card 09. He didn't say it in this sequence.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/sun-light.png" alt="" width="28" height="28"><div><span class="num">05</span><h3>Granting permission, or lifting a rule</h3></div><span class="tag">Permission</span></header>
+      <p class="when">A guardrail is doing its job, and you want this one thing to get through.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"Let's rerun that same agent task again, but specifically give it permission to send the email. And it has permission to send emails to my personal inbox only, for now."</p><p class="aside">And the principle: "You could explicitly tell it to break its rule. If you do that, just be very specific about that."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"You have permission to <span class="ph">[exact action]</span>, to <span class="ph">[exact recipient or scope]</span> only, for now. Everything else stays as it is."</p></div>
+      <p class="why">Exact scope plus "for now" makes it a grant, not a new habit. This one is enforced as well as written down: a guard now blocks any background email that isn't addressed to you.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/water-light.png" alt="" width="28" height="28"><div><span class="num">06</span><h3>Automating something</h3></div><span class="tag">Agents</span></header>
+      <p class="when">A job you keep doing by hand could run on its own.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"Go ahead and create a new task in the agent view to run that exact same test. Go set that up for me, and run it now."</p><p>"In that initial test, you would run it as a controlled test. We're running a test for three days, and we're going to see how well it functions and performs."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"Set this up as an agent task: <span class="ph">[what it does]</span>, <span class="ph">[when it runs]</span>, and <span class="ph">[where the result lands]</span>. Run it once now so we can watch it. Then we run it as a controlled test for three days before I trust it."</p></div>
+      <p class="why">An automation is only as good as its first unattended week. Your boundary still applies inside an agent: it can work and draft at any hour, but nothing reaches another person between 5 PM and 6 AM.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/crescent-light.png" alt="" width="28" height="28"><div><span class="num">07</span><h3>Setting the horizon</h3></div><span class="tag">What's next</span></header>
+      <p class="when">The fixes are in, and you're ready to think bigger about where something goes.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"Over the next whatever months or so, this is my goal for how I want the skill to function. What can we build next? Or what suggestions would you say to begin next?"</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"Over the next <span class="ph">[30 days]</span>, here's how I want <span class="ph">[X]</span> to work: <span class="ph">[the picture]</span>. What would you build next, and what's the smallest test that proves it works?"</p></div>
+      <p class="why">You give the destination, SAGE proposes the route. Your answer on the call is the model: refine /va for two to four weeks, then turn it into an agent that sweeps through the working day, after a three-day controlled test.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/braid-light.png" alt="" width="28" height="28"><div><span class="num">08</span><h3>Curiosity before a fix</h3></div><span class="tag">Why</span></header>
+      <p class="when">Something is missing or misclassified, and you don't yet know why.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"Why isn't the CMO project that you're working on being picked up as a project inside project view? I'm just kind of curious what comes up."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"Why isn't <span class="ph">[X]</span> showing up as <span class="ph">[Y]</span>? I'm curious what you find. Don't fix it yet."</p></div>
+      <p class="why">Asking why gets SAGE to show its logic before it patches anything. Here it showed that a skill you're developing is also a project, and Nikhil took that back to fix in ACE for everyone.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/arm-light.png" alt="" width="28" height="28"><div><span class="num">09</span><h3>Keeping a skill clean after edits</h3></div><span class="tag">Hygiene</span></header>
+      <p class="when">You've changed a skill on the fly a few times, or you notice you're telling SAGE the same thing twice.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"We can on the fly change something in the file. Unless after that change a proper review is done, just to ensure there's no conflicts or clobbering, sometimes one line from earlier in the skill that didn't change can create confusion."</p><p>"You could create that as an automated agent that runs once a week: review the entire VA skill stack to identify where there might be some conflicts or areas for optimization, and email you a report."</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"Read <span class="ph">[the skill]</span> top to bottom and tell me anywhere it contradicts itself or still carries an old rule. Show me the lines before you change anything."</p></div>
+      <p class="why">This is why you sometimes have to tell SAGE twice. Near the top, /va said every Notion write needed your yes first. Further down it said the opposite, because you lifted that gate on September 29 and the old line stayed. A fresh session reads the old rule first.</p>
+    </article>
+
+    <article class="card">
+      <header><img class="glyph" src="glyphs/horus-light.png" alt="" width="28" height="28"><div><span class="num">10</span><h3>When the machine is struggling</h3></div><span class="tag">Machine</span></header>
+      <p class="when">ACE feels slow, the vitals ring says hot, or the fan won't quit.</p>
+      <span class="lbl">Nikhil said</span>
+      <blockquote><p>"I notice right now that the vitals meter in ACE is saying that my system is running hot. Can you do an analysis of my computer and also ACE itself and what processes are running? And can you suggest any optimizations that ACE and Nikhil, the creator of ACE, could make to support performance on Windows and my device?"</p></blockquote>
+      <span class="lbl">Your version</span>
+      <div class="yours"><button class="copy">Copy</button><p>"The vitals say I'm running hot. Look at the whole machine, not just ACE: what's eating memory, what's ACE's share of it, and what would you change, on my side and on Nikhil's?"</p></div>
+      <p class="why">He asked for both halves. The answer: memory at 92%, mostly not ACE, plus a real cold-start cost inside ACE that went to Nikhil as Finding 14.</p>
+    </article>
+
+  </div>
+</section>
+
+<!-- PART FOUR -->
+<section id="origin">
+  <div class="sh"><img src="glyphs/scarab-light.png" alt="" width="20" height="20"><p class="kicker">Part four</p><h2>How the /va build happened</h2></div>
+  <p class="intro">The full sequence from the call, in order, so you can run it again on any skill. The two highlighted steps are where the build turned.</p>
+  <ol class="timeline">
+    <li><h3>You named the need plainly</h3><p><q>How do I look at what the VA does right now, what the current commands are, so I know how to make any tweaks?</q></p><p>You didn't say "fix it" or "improve it." You asked to see it, and that's what set up everything after.</p></li>
+    <li><h3>A fresh chat for one job</h3><p>Nikhil had you open a new chat: <q>I'll tell you exactly how I talk.</q> One job per chat keeps the context clean. (He also pointed out that a green tick on a tab means /close has run.)</p></li>
+    <li><h3>The brief</h3><p>The audit prompt from card 01, ending in an HTML map and report with opportunities to refine.</p></li>
+    <li><h3>Why HTML</h3><p>Nikhil: <q>If I'm building something that has some level of complexity, I like to build HTML little experiences so I can visualize and see things, not purely in text.</q> You: <q>I have to see it in order to understand it at a deeper level.</q></p></li>
+    <li><h3>A map for SAGE too</h3><p>While that ran, he had you install Graphify with the card 03 prompt, so the skill also got a graph SAGE can navigate. <q>As you're building and refining the skill, get it to reference that graph. It's like a visual index.</q></p><span class="result">97 nodes · 203 edges · 6 clusters · hooks never installed</span></li>
+    <li><h3>Reading the findings together</h3><p>The map came back with the architecture, the client journey, how each job runs, who's allowed to do what, and where each fact lives. It also had 21 findings and 10 refinement options. The ones you walked through: client names reaching GitHub, the skill contradicting itself on the Notion gate, the queue drifting (long rows, status words outside the defined set, twelve loop types), a template still pointing at the connector that strips the logo, reschedule searching only one mailbox, and nothing triggering the 48-hour check-in.</p></li>
+    <li><h3>A second, independent pass</h3><p>Superpowers went in with hooks off, and its first job was a code review of /va. It found the same core problems. <q>Those are all covered.</q> When two separate passes agree, you can trust the findings.</p></li>
+    <li class="turn"><h3>The moment</h3><p>You: <q>Go hit all of these 14 things from highest priority all the way down to the bottom.</q> Nikhil: <q>I'll tell you exactly what I would do.</q> Then: <q>Pressure test all your assumptions one more time.</q></p></li>
+    <li class="turn"><h3>What the pressure test changed</h3><p>It retracted one claim (a miscount that was SAGE's own), corrected three (a spelling that was already right, a load size of 58 KB rather than 75 KB, and a scheduler route the sweep turned out to have), sharpened the privacy finding against what was actually on GitHub, and added two new findings.</p><span class="result">1 retracted · 3 corrected · 1 sharpened · 2 added · 0 lines of the skill touched yet</span></li>
+    <li><h3>A to J, in plain language</h3><p>Ten refinements read back simply enough to decide on. Your answer: <q>Based on the work we've done so far and the pressure test results, I am saying yes to all changes.</q></p></li>
+    <li><h3>Shipped</h3><p>/va v0.4, committed at 3:09 PM: queue format v2 with a helper script that enforces it, a tracked-file privacy rule, rules split from evidence, rebuilt Sage templates, 12-hour times and the work-window filter on Calendly, and the lightning list return signal.</p><span class="result">all ten refinements applied</span></li>
+    <li><h3>What's next</h3><p>Refine for two to four weeks, then turn it into an agent that sweeps through the working day, after a three-day controlled test. Nikhil offered to be on deck for that.</p></li>
+  </ol>
+
+  <div class="replay">
+    <h4>Run it again</h4>
+    <h3>The /va sequence, for any skill</h3>
+    <p>Say these in order, in one fresh chat. Steps three and eight are optional on a small skill.</p>
+    <ol>
+      <li><div><span>"How do I see what <span class="ph">[skill]</span> does right now, so I know what to tweak?"</span><small>Name the need. Ask to see it, not to fix it.</small></div></li>
+      <li><div><span>"As you know, we've built <span class="ph">[skill]</span>. Audit it and give me an HTML map I can read at a glance: structure, workflows, where it's leaking, and opportunities. Don't change anything yet."</span><small>The brief (card 01).</small></div></li>
+      <li><div><span>"Map <span class="ph">[skill]</span> with /graphify so you have a visual index while we refine it."</span><small>Worth it once a skill is big enough that you lose track of it.</small></div></li>
+      <li><div><span>Read the map. Ask about anything that doesn't make sense.</span><small>Your part. This is where your own judgment comes in.</small></div></li>
+      <li><div><span>"Pressure test all your assumptions one more time."</span><small>The step that changed seven things.</small></div></li>
+      <li><div><span>"Walk me through each change, A to whatever letter, in plain language so I can approve."</span><small>So you decide without reading every detail.</small></div></li>
+      <li><div><span>"Yes to <span class="ph">[all / these]</span>. Reread the skill for contradictions, then build it."</span><small>Approve with fences.</small></div></li>
+      <li><div><span>"Give it a second pass with the Superpowers code review."</span><small>An independent check, for anything that touches clients or money.</small></div></li>
+      <li><div><span>/close, and /commit when you want it on GitHub.</span><small>Lock it in.</small></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- PART FIVE -->
+<section id="pressure">
+  <div class="sh"><img src="glyphs/crescent-light.png" alt="" width="20" height="20"><p class="kicker">Part five</p><h2>Pressure tested</h2></div>
+  <p class="intro">This page got the same treatment it recommends. Everything Nikhil advised was checked against what actually happened in your system today, and SAGE's own first draft of this playbook was checked too.</p>
+
+  <h3 class="subhead">What Nikhil said</h3>
+  <p class="subintro">Holds means it held up against today's evidence. Caveat means it held, with one thing to watch. Not yet means it hasn't been shown in your system so far.</p>
+  <div class="verdicts">
+    <div class="v"><div class="claim">"Pressure test all your assumptions."</div><span class="chip holds">Holds</span><div class="ev">It made seven changes to the /va report. One thing to watch: it's SAGE checking SAGE. The Superpowers review was the independent second opinion, and on anything high-stakes that second pass is worth asking for.</div></div>
+    <div class="v"><div class="claim">"Ask how it helps and whether it conflicts before installing."</div><span class="chip holds">Holds</span><div class="ev">It closed five Graphify conflicts, including hooks on every file read and search. Without the question, those would have gone in silently.</div></div>
+    <div class="v"><div class="claim">"After on-the-fly edits, review for conflicts."</div><span class="chip holds">Holds</span><div class="ev">The Notion gate contradiction in /va is the proof. Two opposite rules sat in one file for nine days.</div></div>
+    <div class="v"><div class="claim">"Client names on GitHub: gitignore them."<small>He framed it as a consideration, not a red flag.</small></div><span class="chip caveat">Holds, bigger</span><div class="ev">The audit found about 90 of 271 client names in pushed files, and it's now a standing rule. Caveat: ignoring a file stops future pushes. It doesn't remove what's already in history, and that decision stays yours.</div></div>
+    <div class="v"><div class="claim">"Plan mode is mostly unnecessary on Opus 5.5."</div><span class="chip caveat">Holds, with a caveat</span><div class="ev">The toggle is optional, but the plan isn't. Every complex job he started still opened with "do an analysis first and figure out the best plan," in plain words.</div></div>
+    <div class="v"><div class="claim">"Reference the graph while refining."</div><span class="chip caveat">Holds, with a caveat</span><div class="ev">A graph is a snapshot. After a big change like v0.4, map it again, or SAGE will navigate by a confident, out-of-date map.</div></div>
+    <div class="v"><div class="claim">"The queue may want a real database."</div><span class="chip notyet">Not yet</span><div class="ev">The fix chosen was a defined queue format with a script that enforces it. Markdown holds up fine when the format is defined and guarded. A database is the move if the queue outgrows that.</div></div>
+    <div class="v"><div class="claim">"Windows may not run tasks with the lid closed. Test it."</div><span class="chip notyet">Not yet proven</span><div class="ev">By his own account, Nikhil tests Windows in a simulator. Your power settings were changed, but nobody has seen a task run with the lid shut. Until somebody has, plan on scheduled runs needing the laptop awake.</div></div>
+    <div class="v"><div class="claim">"Chrome eats memory. Switch to Arc."</div><span class="chip caveat">Holds for the diagnosis</span><div class="ev">Memory really was 92% used, and most of it wasn't ACE. Switching browsers is a separate choice: Chrome's built-in Memory Saver already puts idle tabs to sleep, and a new browser is a /compass-review question before it's a download.</div></div>
+    <div class="v"><div class="claim">"Build it as a skill before you build an app."</div><span class="chip holds">Holds</span><div class="ev">A skill is cheap to test and easy to change. Your movie library went exactly this way.</div></div>
+  </div>
+
+  <h3 class="subhead">SAGE's own first draft</h3>
+  <p class="subintro">The playbook in chat came before this page. Here's what the pressure test changed in it.</p>
+  <div class="verdicts">
+    <div class="v"><div class="claim">"It found 4 of the 18 calls were wrong."</div><span class="chip fixed">Corrected</span><div class="ev">That number came from your retelling after the call. The written record: the report had 21 findings, and the pressure test retracted 1, corrected 3, sharpened 1 and added 2.</div></div>
+    <div class="v"><div class="claim">"He almost never says just do it."</div><span class="chip fixed">Sharpened</span><div class="ev">True on first contact with anything complex. On small, known actions he goes straight to "run it now," and so should you.</div></div>
+    <div class="v"><div class="claim">The three-line gate.</div><span class="chip fixed">Labeled</span><div class="ev">The pressure test and the A to J readback are his words. "Reread for contradictions" is SAGE's addition from his hygiene rule, and the card now says so.</div></div>
+    <div class="v"><div class="claim">Superpowers clashes with Windows over "the semicolon."</div><span class="chip fixed">Corrected</span><div class="ev">It's the colon in names like <code>superpowers:brainstorming</code>, which Windows won't allow in a folder name. A small thing, and exactly the kind of detail a pressure test is for.</div></div>
+    <div class="v"><div class="claim">Who said what.</div><span class="chip fixed">Checked</span><div class="ev">Wave's speaker labels drift. Near the end of the recording, it tagged other voices in your house as Nikhil. Every quote on this page was checked against who was actually speaking.</div></div>
+  </div>
+</section>
+
+<div class="method">
+  <h4>Where this came from</h4>
+  <p>Source: the Wave recording of the ACE 1:1 build session between Nikhil Kale and Christopher Hager, Thursday, October 8, 2026, from 12:00 PM, read in full (723 turns). Quotes are lightly cleaned of repeated words; the meaning is untouched. Outcomes are checked against the day's log and the /va v0.4 commit. The transcript itself is not stored in the vault, and no client is named on this page.</p>
+</div>
+</main>
+
+<footer><img src="glyphs/ankh-light.png" alt="" width="14" height="14"> Talking to SAGE · Christopher Hager · October 8, 2026</footer>
+
+<script>
+document.querySelectorAll('.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var box = btn.parentElement, text;
+    var items = box.querySelectorAll('li');
+    if (items.length) { text = Array.prototype.map.call(items, function (li) { return li.innerText.trim(); }).join('\n'); }
+    else { text = Array.prototype.map.call(box.querySelectorAll('p'), function (p) { return p.innerText.trim(); }).join('\n'); }
+    function done() { btn.textContent = 'Copied'; btn.classList.add('done'); setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1600); }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); } else { fallback(); }
+  });
+});
+</script>
+</body></html>
